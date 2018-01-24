@@ -1,0 +1,15 @@
+canvas {
+
+
+	border: 2px solid gray;
+	background-color: whitesmoke;
+
+}
+
+div {
+	columns: 100px 3;
+}
+
+button {
+	display: block;
+}
