@@ -2,7 +2,8 @@ canvas {
 
 
 	border: 2px solid gray;
-	background-color: whitesmoke;
+	background-color: #e6ffe6;
+	background-image: url("../../images/checkerboard.png");
 
 }
 

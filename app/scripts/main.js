@@ -1,9 +1,11 @@
-var head, onGrid;
+var head;
+var unitX = 15;
+var unitY = 15;
 
 function startGame() {
 
 	gameArea.start();
-	head = new Snake(100,80,15,15, 'green', 'RIGHT');
+	head = new Snake(6*unitX, 5*unitY, unitX, unitY, '#ff6666', 'RIGHT');
 	
 	document.addEventListener("keydown", function(e){
 		if (e.keyCode == 37 && (head.vector == 'UP' || head.vector == 'DOWN')) {
@@ -20,13 +22,15 @@ function startGame() {
 }
 
 var gameArea = {
+	rows : 16,
+	columns : 25,
 	canvas : document.createElement("canvas"),
 	start : function() {
-		this.canvas.width = 375;
-		this.canvas.height = 240;
+		this.canvas.width = unitX * this.columns;
+		this.canvas.height = unitY * this.rows;
 		this.context = this.canvas.getContext("2d");
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-		this.interval = setInterval(updateGameArea, 20);
+		this.interval = setInterval(updateGameArea, 15);
 	},
 	clear : function() {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -42,6 +46,7 @@ function Snake(posX, posY, sizeX, sizeY, color, direction) {
 	this.speed = 1;
 	this.vector = direction;
 	this.nextTurn = direction;
+	this.onGrid = false;
 	this.tail = [
 		{},
 		{},
@@ -56,10 +61,49 @@ function Snake(posX, posY, sizeX, sizeY, color, direction) {
 	ctx.fill();
 		
 	this.newPos = function() {
-		if (this.vector == 'RIGHT') this.x += this.speed;
-		if (this.vector == 'LEFT') this.x -= this.speed;
-		if (this.vector == 'UP') this.y -= this.speed;
-		if (this.vector == 'DOWN') this.y += this.speed;
+		
+		switch(this.vector) {
+			
+			case 'RIGHT':
+				this.x += this.speed;
+				if(this.x%this.width) {
+					this.onGrid = false;
+				} else {
+					this.onGrid = true;
+				}
+				break;
+				
+			case 'LEFT':
+				this.x -= this.speed;
+				if(this.x%this.width) {
+					this.onGrid = false;
+				} else {
+					this.onGrid = true;
+				}
+				break;
+				
+			case 'UP':
+				this.y -= this.speed;
+				if(this.y%this.height) {
+					this.onGrid = false;
+				} else {
+					this.onGrid = true;
+				}
+				break;
+				
+			case 'DOWN':
+				this.y += this.speed;
+				if(this.y%this.height) {
+					this.onGrid = false;
+				} else {
+					this.onGrid = true;
+				}
+				break;
+				
+			default:
+				console.log("Swich did not worked...");
+		}
+		
 	};
 	
 	this.update = function() {
@@ -67,11 +111,11 @@ function Snake(posX, posY, sizeX, sizeY, color, direction) {
 	};
 	
 	this.colided = function() {
-		if (this.x <= 0 || this.y <= 0) {
+		if (this.x < 0 || this.y < 0) {
 			return true;
-		} else if (this.x >= gameArea.canvas.width - this.width) {
+		} else if (this.x > gameArea.canvas.width - this.width) {
 			return true;
-		} else if (this.y >= gameArea.canvas.height - this.height) {
+		} else if (this.y > gameArea.canvas.height - this.height) {
 			return true;
 		} else return false;
 	};
@@ -80,7 +124,7 @@ function Snake(posX, posY, sizeX, sizeY, color, direction) {
 function updateGameArea() {
 	gameArea.clear();
 	head.newPos();
-	
+	if((head.vector != head.nextTurn) && head.onGrid) head.vector = head.nextTurn;
 	if (head.colided()) clearInterval(gameArea.interval);
 	head.update();
 }
