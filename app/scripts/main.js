@@ -48,11 +48,7 @@ function Snake(posX, posY, sizeX, sizeY, color, direction) {
 	this.nextTurn = direction;
 	this.onGrid = false;
 	this.tail = [
-		{},
-		{},
-		{},
-		{},
-		{}
+		{x : this.x , y : this.y}
 	];
 	
 	ctx = gameArea.context;
@@ -104,10 +100,17 @@ function Snake(posX, posY, sizeX, sizeY, color, direction) {
 				console.log("Swich did not worked...");
 		}
 		
+		var tailAddition = {x : this.x , y : this.y};
+		this.tail.unshift(tailAddition);
+		if(this.tail.length > unitX * 5) this.tail.pop();
+		
 	};
 	
 	this.update = function() {
 		ctx.fillRect(this.x, this.y, this.width, this.height);
+		if(this.tail.length >= unitX * 5) {
+			ctx.clearRect(this.tail[this.tail.length-1].x,this.tail[this.tail.length-1].y,this.width, this.height);
+		}
 	};
 	
 	this.colided = function() {
@@ -122,7 +125,7 @@ function Snake(posX, posY, sizeX, sizeY, color, direction) {
 }
 
 function updateGameArea() {
-	gameArea.clear();
+	//gameArea.clear();
 	head.newPos();
 	if((head.vector != head.nextTurn) && head.onGrid) head.vector = head.nextTurn;
 	if (head.colided()) clearInterval(gameArea.interval);
